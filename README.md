@@ -171,6 +171,90 @@ kiichaind genesis collect-gentxs
 # Validate genesis file
 kiichaind genesis validate-genesis
 ```
+## Module & Directory Overview
+
+The following section provides a high-level overview of how KiiChain is structured and where different responsibilities live in the codebase.
+
+### Core Directories
+
+- **ante/**  
+  Transaction preprocessing and custom ante handlers (fees, signatures, gas, etc).
+
+- **app/**  
+  Application wiring: module registration, keeper setup, configuration, and initialization logic.
+
+- **cmd/kiichaind/**  
+  CLI entrypoint and main binary for running a KiiChain node.
+
+- **x/**  
+  Cosmos SDK modules that implement the core business logic of the chain.  
+  Each subdirectory represents a standalone module.
+
+- **precompiles/**  
+  EVM precompiled contracts that expose native chain functionality to smart contracts.
+
+- **wasmbinding/**  
+  Custom bindings enabling CosmWasm contracts to interact with native modules.
+
+- **proto/**  
+  Protobuf definitions for messages, queries, and gRPC services across all modules.
+
+- **tests/**  
+  Integration tests, end-to-end tests, and shared testing utilities.
+
+### Supporting Directories
+
+- **contrib/**  
+  Helper scripts and contributor tooling.
+
+- **assets/**  
+  Static assets such as logos, diagrams, and documentation resources.
+
+- **client/docs/**  
+  User-facing documentation for CLI usage and operational guides.
+
+---
+
+### Module Boundaries
+
+At a high level:
+
+- **`x/`** contains the core business logic.  
+- **`app/`** wires all modules together into a runnable application.  
+- **`cmd/`** exposes the application to users and operators.  
+- **`ante/`, `precompiles/`, and `wasmbinding/`** serve as integration layers between the chain and external execution environments (SDK tx flow, EVM, CosmWasm).  
+- **`proto/`** defines the public API surface of the chain.
+
+This structure helps keep concerns separated and makes it easier for contributors to understand where new features or fixes should live.
+
+### Where to start (quick links)
+
+- `cmd/kiichaind/main.go` — CLI entrypoint and node bootstrap.
+- `app/app.go` — application wiring and keeper initialization.
+- `x/oracle/module.go` (example module) — typical module layout and handlers.
+
+### Protobuf notes
+
+Source `.proto` files live under the `proto/` directory. Generated Go artifacts (e.g. `*.pb.go`, `*.pb.gw.go`) are placed under each module's `types` package (see `x/*/types`). To regenerate protobufs, run:
+
+```bash
+make proto-gen
+```
+
+### Running tests (quick)
+
+Run unit tests:
+
+```bash
+make test-unit
+```
+
+Run end-to-end tests:
+
+```bash
+make test-e2e
+```
+
 ## Quick-Start Guide for Developers
 
 Get up and running with KiiChain in minutes. This guide covers the essentials for setting up a development environment.
